@@ -14,7 +14,348 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      lead_interactions: {
+        Row: {
+          channel: string
+          created_at: string
+          id: string
+          lead_id: string
+          next_followup_at: string | null
+          notes: string | null
+          occurred_at: string
+          response: string | null
+          result: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          channel?: string
+          created_at?: string
+          id?: string
+          lead_id: string
+          next_followup_at?: string | null
+          notes?: string | null
+          occurred_at?: string
+          response?: string | null
+          result?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          channel?: string
+          created_at?: string
+          id?: string
+          lead_id?: string
+          next_followup_at?: string | null
+          notes?: string | null
+          occurred_at?: string
+          response?: string | null
+          result?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_interactions_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leads: {
+        Row: {
+          address: string | null
+          city: string | null
+          collected_at: string
+          company: string
+          contacted_at: string | null
+          created_at: string
+          facebook: string | null
+          followup_at: string | null
+          google_maps_url: string | null
+          id: string
+          independent_local: boolean
+          instagram: string | null
+          is_demo: boolean
+          linkedin: string | null
+          message: string | null
+          neighborhood: string | null
+          niche_id: string | null
+          notes: string | null
+          opportunity_reason: string | null
+          phone: string | null
+          priority: string
+          rating: number | null
+          region: string | null
+          result: string | null
+          reviews_count: number | null
+          score: number
+          segment: string | null
+          state: string | null
+          status: string
+          subsegment: string | null
+          updated_at: string
+          user_id: string
+          website: string | null
+          website_status: string
+          whatsapp: string | null
+          zip: string | null
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          collected_at?: string
+          company: string
+          contacted_at?: string | null
+          created_at?: string
+          facebook?: string | null
+          followup_at?: string | null
+          google_maps_url?: string | null
+          id?: string
+          independent_local?: boolean
+          instagram?: string | null
+          is_demo?: boolean
+          linkedin?: string | null
+          message?: string | null
+          neighborhood?: string | null
+          niche_id?: string | null
+          notes?: string | null
+          opportunity_reason?: string | null
+          phone?: string | null
+          priority?: string
+          rating?: number | null
+          region?: string | null
+          result?: string | null
+          reviews_count?: number | null
+          score?: number
+          segment?: string | null
+          state?: string | null
+          status?: string
+          subsegment?: string | null
+          updated_at?: string
+          user_id: string
+          website?: string | null
+          website_status?: string
+          whatsapp?: string | null
+          zip?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          collected_at?: string
+          company?: string
+          contacted_at?: string | null
+          created_at?: string
+          facebook?: string | null
+          followup_at?: string | null
+          google_maps_url?: string | null
+          id?: string
+          independent_local?: boolean
+          instagram?: string | null
+          is_demo?: boolean
+          linkedin?: string | null
+          message?: string | null
+          neighborhood?: string | null
+          niche_id?: string | null
+          notes?: string | null
+          opportunity_reason?: string | null
+          phone?: string | null
+          priority?: string
+          rating?: number | null
+          region?: string | null
+          result?: string | null
+          reviews_count?: number | null
+          score?: number
+          segment?: string | null
+          state?: string | null
+          status?: string
+          subsegment?: string | null
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+          website_status?: string
+          whatsapp?: string | null
+          zip?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_niche_id_fkey"
+            columns: ["niche_id"]
+            isOneToOne: false
+            referencedRelation: "niches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      message_templates: {
+        Row: {
+          active: boolean
+          content: string
+          created_at: string
+          id: string
+          niche_id: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          content: string
+          created_at?: string
+          id?: string
+          niche_id?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          content?: string
+          created_at?: string
+          id?: string
+          niche_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_templates_niche_id_fkey"
+            columns: ["niche_id"]
+            isOneToOne: false
+            referencedRelation: "niches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      niches: {
+        Row: {
+          active: boolean
+          created_at: string
+          default_message: string | null
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          default_message?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          default_message?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      search_jobs: {
+        Row: {
+          created_at: string
+          duplicated_rows: number
+          id: string
+          imported_rows: number
+          invalid_rows: number
+          params: Json
+          provider: string
+          source: string | null
+          status: string
+          total_rows: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duplicated_rows?: number
+          id?: string
+          imported_rows?: number
+          invalid_rows?: number
+          params?: Json
+          provider?: string
+          source?: string | null
+          status?: string
+          total_rows?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          duplicated_rows?: number
+          id?: string
+          imported_rows?: number
+          invalid_rows?: number
+          params?: Json
+          provider?: string
+          source?: string | null
+          status?: string
+          total_rows?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      settings: {
+        Row: {
+          created_at: string
+          default_city: string
+          default_region: string
+          score_weights: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          default_city?: string
+          default_region?: string
+          score_weights?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          default_city?: string
+          default_region?: string
+          score_weights?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
