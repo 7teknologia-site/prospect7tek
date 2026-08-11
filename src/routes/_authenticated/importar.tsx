@@ -41,7 +41,7 @@ type Analyzed = {
   lead: LeadInput;
   state: "novo" | "duplicado" | "invalido";
   errors: string[];
-  existingId?: string;
+  existingId?: string | undefined;
 };
 
 function ImportPage() {
@@ -155,8 +155,8 @@ function ImportPage() {
 
     if (dupMode === "atualizar") {
       for (const d of dups) {
-        const patch = enrich(d.lead);
-        delete (patch as Record<string, unknown>).id;
+        const patch = enrich(d.lead) as Record<string, unknown>;
+        delete patch["id"];
         const { error } = await supabase.from("leads").update(patch as never).eq("id", d.existingId!);
         if (!error) updated++;
       }
