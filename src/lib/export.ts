@@ -53,7 +53,8 @@ export function exportXlsx(leads: Lead[], niches: Niche[], filename = "leads.xls
 
 export function exportCsv(leads: Lead[], niches: Niche[], filename = "leads.csv") {
   const rows = leadsToRows(leads, niches);
-  const headers = rows.length ? Object.keys(rows[0]) : [];
+  const first = rows[0];
+  const headers = first ? Object.keys(first) : [];
   const escape = (v: unknown) => `"${String(v ?? "").replaceAll('"', '""')}"`;
   const csv = [headers.join(";"), ...rows.map((r) => headers.map((h) => escape((r as Record<string, unknown>)[h])).join(";"))].join("\n");
   download(new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" }), filename);

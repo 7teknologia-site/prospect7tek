@@ -8,7 +8,8 @@ export function detectDelimiter(text: string): string {
     ";": (line.match(/;/g) || []).length,
     ",": (line.match(/,/g) || []).length,
   };
-  return Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
+  const best = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+  return best ? best[0] : ",";
 }
 
 export function parseDelimited(text: string, delimiter?: string): string[][] {
@@ -99,7 +100,7 @@ export type ParsedTable = {
 export function parseLeadsTable(text: string): ParsedTable {
   const table = parseDelimited(text);
   if (table.length === 0) return { headers: [], mapped: [], rows: [], rawRowCount: 0 };
-  const headers = table[0].map((h) => h.trim());
+  const headers = (table[0] ?? []).map((h) => h.trim());
   const mapped = headers.map((h) => HEADER_MAP[normalizeHeader(h)] ?? null);
   const rows: LeadInput[] = [];
   for (const raw of table.slice(1)) {
