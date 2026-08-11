@@ -10,33 +10,143 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedConfiguracoesRouteImport } from './routes/_authenticated/configuracoes'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedFollowupsRouteImport } from './routes/_authenticated/followups'
+import { Route as AuthenticatedImportarRouteImport } from './routes/_authenticated/importar'
+import { Route as AuthenticatedLeadsRouteImport } from './routes/_authenticated/leads'
+import { Route as AuthenticatedMensagensRouteImport } from './routes/_authenticated/mensagens'
+import { Route as AuthenticatedNichosRouteImport } from './routes/_authenticated/nichos'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedConfiguracoesRoute =
+  AuthenticatedConfiguracoesRouteImport.update({
+    id: '/configuracoes',
+    path: '/configuracoes',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedFollowupsRoute = AuthenticatedFollowupsRouteImport.update({
+  id: '/followups',
+  path: '/followups',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedImportarRoute = AuthenticatedImportarRouteImport.update({
+  id: '/importar',
+  path: '/importar',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedLeadsRoute = AuthenticatedLeadsRouteImport.update({
+  id: '/leads',
+  path: '/leads',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMensagensRoute = AuthenticatedMensagensRouteImport.update({
+  id: '/mensagens',
+  path: '/mensagens',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedNichosRoute = AuthenticatedNichosRouteImport.update({
+  id: '/nichos',
+  path: '/nichos',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/configuracoes': typeof AuthenticatedConfiguracoesRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/followups': typeof AuthenticatedFollowupsRoute
+  '/importar': typeof AuthenticatedImportarRoute
+  '/leads': typeof AuthenticatedLeadsRoute
+  '/mensagens': typeof AuthenticatedMensagensRoute
+  '/nichos': typeof AuthenticatedNichosRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/configuracoes': typeof AuthenticatedConfiguracoesRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/followups': typeof AuthenticatedFollowupsRoute
+  '/importar': typeof AuthenticatedImportarRoute
+  '/leads': typeof AuthenticatedLeadsRoute
+  '/mensagens': typeof AuthenticatedMensagensRoute
+  '/nichos': typeof AuthenticatedNichosRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/configuracoes': typeof AuthenticatedConfiguracoesRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/followups': typeof AuthenticatedFollowupsRoute
+  '/_authenticated/importar': typeof AuthenticatedImportarRoute
+  '/_authenticated/leads': typeof AuthenticatedLeadsRoute
+  '/_authenticated/mensagens': typeof AuthenticatedMensagensRoute
+  '/_authenticated/nichos': typeof AuthenticatedNichosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/configuracoes'
+    | '/dashboard'
+    | '/followups'
+    | '/importar'
+    | '/leads'
+    | '/mensagens'
+    | '/nichos'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/configuracoes'
+    | '/dashboard'
+    | '/followups'
+    | '/importar'
+    | '/leads'
+    | '/mensagens'
+    | '/nichos'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/configuracoes'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/followups'
+    | '/_authenticated/importar'
+    | '/_authenticated/leads'
+    | '/_authenticated/mensagens'
+    | '/_authenticated/nichos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,22 +158,100 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/configuracoes': {
+      id: '/_authenticated/configuracoes'
+      path: '/configuracoes'
+      fullPath: '/configuracoes'
+      preLoaderRoute: typeof AuthenticatedConfiguracoesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/followups': {
+      id: '/_authenticated/followups'
+      path: '/followups'
+      fullPath: '/followups'
+      preLoaderRoute: typeof AuthenticatedFollowupsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/importar': {
+      id: '/_authenticated/importar'
+      path: '/importar'
+      fullPath: '/importar'
+      preLoaderRoute: typeof AuthenticatedImportarRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/leads': {
+      id: '/_authenticated/leads'
+      path: '/leads'
+      fullPath: '/leads'
+      preLoaderRoute: typeof AuthenticatedLeadsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/mensagens': {
+      id: '/_authenticated/mensagens'
+      path: '/mensagens'
+      fullPath: '/mensagens'
+      preLoaderRoute: typeof AuthenticatedMensagensRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/nichos': {
+      id: '/_authenticated/nichos'
+      path: '/nichos'
+      fullPath: '/nichos'
+      preLoaderRoute: typeof AuthenticatedNichosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedConfiguracoesRoute: typeof AuthenticatedConfiguracoesRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedFollowupsRoute: typeof AuthenticatedFollowupsRoute
+  AuthenticatedImportarRoute: typeof AuthenticatedImportarRoute
+  AuthenticatedLeadsRoute: typeof AuthenticatedLeadsRoute
+  AuthenticatedMensagensRoute: typeof AuthenticatedMensagensRoute
+  AuthenticatedNichosRoute: typeof AuthenticatedNichosRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedConfiguracoesRoute: AuthenticatedConfiguracoesRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedFollowupsRoute: AuthenticatedFollowupsRoute,
+  AuthenticatedImportarRoute: AuthenticatedImportarRoute,
+  AuthenticatedLeadsRoute: AuthenticatedLeadsRoute,
+  AuthenticatedMensagensRoute: AuthenticatedMensagensRoute,
+  AuthenticatedNichosRoute: AuthenticatedNichosRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
