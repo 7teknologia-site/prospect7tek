@@ -78,21 +78,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Prospector 7TEKNOLOGIA" },
+      { title: "Prospector 7TEKNOLOGIA — Prospecção de leads locais" },
       {
         name: "description",
         content:
-          "Pesquisa, qualificação e prospecção inteligente de leads locais para criação de sites.",
+          "Importe, qualifique e organize leads de empresas locais da Zona Norte de São Paulo para prospecção de criação de sites.",
       },
       { name: "author", content: "7TEKNOLOGIA" },
-      { property: "og:title", content: "Prospector 7TEKNOLOGIA" },
+      { property: "og:title", content: "Prospector 7TEKNOLOGIA — Prospecção de leads locais" },
       {
         property: "og:description",
-        content: "Pesquisa, qualificação e prospecção inteligente de leads locais.",
+        content: "Importe, qualifique e organize leads de empresas locais da Zona Norte de São Paulo para prospecção de criação de sites.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Prospector 7TEKNOLOGIA — Prospecção de leads locais" },
+      { name: "twitter:description", content: "Importe, qualifique e organize leads de empresas locais da Zona Norte de São Paulo para prospecção de criação de sites." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/6be43491fde5ef67e472be42a1602d2c/id-preview-e414e7d1--e4b13e79-f36e-48b7-b711-e8c07ce929fa.lovable.app-1786414937336.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/6be43491fde5ef67e472be42a1602d2c/id-preview-e414e7d1--e4b13e79-f36e-48b7-b711-e8c07ce929fa.lovable.app-1786414937336.png" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
