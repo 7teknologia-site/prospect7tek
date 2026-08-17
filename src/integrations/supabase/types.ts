@@ -79,7 +79,9 @@ export type Database = {
           independent_local: boolean
           instagram: string | null
           is_demo: boolean
+          latitude: number | null
           linkedin: string | null
+          longitude: number | null
           message: string | null
           neighborhood: string | null
           niche_id: string | null
@@ -93,6 +95,8 @@ export type Database = {
           reviews_count: number | null
           score: number
           segment: string | null
+          source: string | null
+          source_url: string | null
           state: string | null
           status: string
           subsegment: string | null
@@ -117,7 +121,9 @@ export type Database = {
           independent_local?: boolean
           instagram?: string | null
           is_demo?: boolean
+          latitude?: number | null
           linkedin?: string | null
+          longitude?: number | null
           message?: string | null
           neighborhood?: string | null
           niche_id?: string | null
@@ -131,6 +137,8 @@ export type Database = {
           reviews_count?: number | null
           score?: number
           segment?: string | null
+          source?: string | null
+          source_url?: string | null
           state?: string | null
           status?: string
           subsegment?: string | null
@@ -155,7 +163,9 @@ export type Database = {
           independent_local?: boolean
           instagram?: string | null
           is_demo?: boolean
+          latitude?: number | null
           linkedin?: string | null
+          longitude?: number | null
           message?: string | null
           neighborhood?: string | null
           niche_id?: string | null
@@ -169,6 +179,8 @@ export type Database = {
           reviews_count?: number | null
           score?: number
           segment?: string | null
+          source?: string | null
+          source_url?: string | null
           state?: string | null
           status?: string
           subsegment?: string | null
