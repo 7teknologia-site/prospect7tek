@@ -24,6 +24,7 @@ import {
 
 const items = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+  { title: "Pesquisa RX", url: "/pesquisa-rx", icon: Radar },
   { title: "Leads", url: "/leads", icon: Users },
   { title: "Importar Leads", url: "/importar", icon: Upload },
   { title: "Nichos", url: "/nichos", icon: Tags },
