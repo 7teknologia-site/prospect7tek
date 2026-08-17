@@ -19,6 +19,7 @@ import { Route as AuthenticatedImportarRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedLeadsRouteImport } from './routes/_authenticated/leads'
 import { Route as AuthenticatedMensagensRouteImport } from './routes/_authenticated/mensagens'
 import { Route as AuthenticatedNichosRouteImport } from './routes/_authenticated/nichos'
+import { Route as AuthenticatedPesquisaRxRouteImport } from './routes/_authenticated/pesquisa-rx'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -70,6 +71,11 @@ const AuthenticatedNichosRoute = AuthenticatedNichosRouteImport.update({
   path: '/nichos',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPesquisaRxRoute = AuthenticatedPesquisaRxRouteImport.update({
+  id: '/pesquisa-rx',
+  path: '/pesquisa-rx',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -81,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/leads': typeof AuthenticatedLeadsRoute
   '/mensagens': typeof AuthenticatedMensagensRoute
   '/nichos': typeof AuthenticatedNichosRoute
+  '/pesquisa-rx': typeof AuthenticatedPesquisaRxRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -92,6 +99,7 @@ export interface FileRoutesByTo {
   '/leads': typeof AuthenticatedLeadsRoute
   '/mensagens': typeof AuthenticatedMensagensRoute
   '/nichos': typeof AuthenticatedNichosRoute
+  '/pesquisa-rx': typeof AuthenticatedPesquisaRxRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -105,6 +113,7 @@ export interface FileRoutesById {
   '/_authenticated/leads': typeof AuthenticatedLeadsRoute
   '/_authenticated/mensagens': typeof AuthenticatedMensagensRoute
   '/_authenticated/nichos': typeof AuthenticatedNichosRoute
+  '/_authenticated/pesquisa-rx': typeof AuthenticatedPesquisaRxRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -118,6 +127,7 @@ export interface FileRouteTypes {
     | '/leads'
     | '/mensagens'
     | '/nichos'
+    | '/pesquisa-rx'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -129,6 +139,7 @@ export interface FileRouteTypes {
     | '/leads'
     | '/mensagens'
     | '/nichos'
+    | '/pesquisa-rx'
   id:
     | '__root__'
     | '/'
@@ -141,6 +152,7 @@ export interface FileRouteTypes {
     | '/_authenticated/leads'
     | '/_authenticated/mensagens'
     | '/_authenticated/nichos'
+    | '/_authenticated/pesquisa-rx'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -221,6 +233,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedNichosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/pesquisa-rx': {
+      id: '/_authenticated/pesquisa-rx'
+      path: '/pesquisa-rx'
+      fullPath: '/pesquisa-rx'
+      preLoaderRoute: typeof AuthenticatedPesquisaRxRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -232,6 +251,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedLeadsRoute: typeof AuthenticatedLeadsRoute
   AuthenticatedMensagensRoute: typeof AuthenticatedMensagensRoute
   AuthenticatedNichosRoute: typeof AuthenticatedNichosRoute
+  AuthenticatedPesquisaRxRoute: typeof AuthenticatedPesquisaRxRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -242,6 +262,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedLeadsRoute: AuthenticatedLeadsRoute,
   AuthenticatedMensagensRoute: AuthenticatedMensagensRoute,
   AuthenticatedNichosRoute: AuthenticatedNichosRoute,
+  AuthenticatedPesquisaRxRoute: AuthenticatedPesquisaRxRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
