@@ -34,6 +34,7 @@ export type RxCandidate = {
   source: string;
   source_url: string | null;
   google_maps_url: string | null;
+  opportunity_reason_preview?: string;
 };
 
 export type GeoPlace = {
