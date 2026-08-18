@@ -1,10 +1,15 @@
-import { ensureUrl, siteDomain, type WebsiteStatus } from "./prospector";
+import { ensureUrl, siteDomain } from "./prospector";
 import {
   candidateKeys,
+  computeConfidence,
+  makeEvidence,
   normalizeCompany,
   rxOpportunityReason,
+  siteStateToWebsiteStatus,
   tagsForSegment,
   type GeoPlace,
+  type RxEvidence,
+  type RxSiteState,
   type RxCandidate,
 } from "./rx";
 
@@ -86,7 +91,7 @@ export async function geocodePlaces(query: string): Promise<GeoPlace[]> {
     lat: Number(r.lat),
     lon: Number(r.lon),
     boundingbox: r.boundingbox.map(Number) as [number, number, number, number],
-    type: r.type,
+    ...(r.type ? { type: r.type } : {}),
   }));
 }
 
@@ -169,7 +174,6 @@ export function elementToCandidate(
 
   const rawWebsite = pick(tags, ["website", "contact:website", "url"]);
   let website = ensureUrl(rawWebsite);
-  let website_status: WebsiteStatus = "nao_verificado";
   let facebook = socialUrl("facebook.com", pick(tags, ["contact:facebook", "facebook"]));
   const instagram = socialUrl("instagram.com", pick(tags, ["contact:instagram", "instagram"]));
   const linkedin = socialUrl("linkedin.com/company", pick(tags, ["contact:linkedin", "linkedin"]));
@@ -179,7 +183,6 @@ export function elementToCandidate(
     if (d.includes("facebook")) facebook = facebook ?? website;
     website = null;
   }
-  if (!website) website_status = "nao_verificado";
 
   const phone = pick(tags, ["phone", "contact:phone", "contact:mobile", "mobile"]);
   const whatsapp = pick(tags, ["contact:whatsapp", "whatsapp"]);
@@ -187,7 +190,45 @@ export function elementToCandidate(
   const osmUrl = `https://www.openstreetmap.org/${el.type}/${el.id}`;
   const mapsQuery = encodeURIComponent(`${company} ${address ?? ""} ${tags["addr:city"] ?? ""}`.trim());
 
-  return {
+  const now = new Date().toISOString();
+  const src = "OpenStreetMap";
+  const site_state: RxSiteState = website ? "site_nao_confirmado" : "sem_evidencia_de_site_na_fonte";
+  const independent = !tags["brand"] && !tags["brand:wikidata"];
+
+  const ev = (
+    field: string,
+    label: string,
+    value: string | null,
+  ): RxEvidence =>
+    value
+      ? makeEvidence(field, label, value, "confirmado", src, osmUrl, now)
+      : makeEvidence(field, label, null, "ausente_na_fonte", null, null, now);
+
+  const evidence: RxEvidence[] = [
+    makeEvidence("company", "Nome da empresa", company, "confirmado", src, osmUrl, now),
+    ev("phone", "Telefone", phone),
+    ev("whatsapp", "WhatsApp", whatsapp),
+    ev("instagram", "Instagram", instagram),
+    ev("linkedin", "LinkedIn", linkedin),
+    ev("facebook", "Facebook", facebook),
+    ev("address", "Endereço", address),
+    website
+      ? makeEvidence("website", "Site", website, "nao_confirmado", src, osmUrl, now)
+      : makeEvidence("website", "Site", null, "ausente_na_fonte", null, null, now),
+    makeEvidence(
+      "independent_local",
+      "Empresa local independente",
+      independent ? "Sem marca/rede declarada na fonte" : "Marca/rede declarada",
+      independent ? "confirmado" : "nao_confirmado",
+      src,
+      osmUrl,
+      now,
+    ),
+    makeEvidence("rating", "Nota (Google)", null, "ausente_na_fonte", null, null, now),
+    makeEvidence("reviews_count", "Avaliações (Google)", null, "ausente_na_fonte", null, null, now),
+  ];
+
+  const candidate: RxCandidate = {
     key: `${el.type}/${el.id}`,
     company,
     segment: ctx.segment,
@@ -201,7 +242,8 @@ export function elementToCandidate(
     phone,
     whatsapp,
     website,
-    website_status,
+    site_state,
+    website_status: siteStateToWebsiteStatus(site_state),
     instagram,
     linkedin,
     facebook,
@@ -209,29 +251,33 @@ export function elementToCandidate(
     rating: null,
     latitude: lat,
     longitude: lon,
-    independent_local: !tags["brand"] && !tags["brand:wikidata"],
-    source: "OpenStreetMap",
+    independent_local: independent,
+    source: src,
     source_url: osmUrl,
     google_maps_url: `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`,
+    evidence,
   };
+  candidate.confidence = computeConfidence(candidate);
+  return candidate;
 }
 
 /** Valida uma URL de site com proteção contra SSRF. */
 export async function validateSiteUrl(
   rawUrl: string,
-): Promise<{ status: WebsiteStatus; finalDomain: string | null }> {
+): Promise<{ state: RxSiteState; finalDomain: string | null }> {
   const normalized = ensureUrl(rawUrl);
-  if (!normalized) return { status: "sem_site_confirmado", finalDomain: null };
+  if (!normalized) return { state: "sem_evidencia_de_site_na_fonte", finalDomain: null };
   let parsed: URL;
   try {
     parsed = new URL(normalized);
   } catch {
-    return { status: "site_invalido", finalDomain: null };
+    return { state: "site_invalido", finalDomain: null };
   }
   if (parsed.protocol !== "http:" && parsed.protocol !== "https:")
-    return { status: "site_invalido", finalDomain: null };
-  if (isPrivateHost(parsed.hostname)) return { status: "site_invalido", finalDomain: null };
-  if (isSocialOrDirectory(parsed.href)) return { status: "sem_site_confirmado", finalDomain: null };
+    return { state: "site_invalido", finalDomain: null };
+  if (isPrivateHost(parsed.hostname)) return { state: "site_invalido", finalDomain: null };
+  if (isSocialOrDirectory(parsed.href))
+    return { state: "sem_evidencia_de_site_na_fonte", finalDomain: null };
 
   let current = parsed.href;
   for (let hop = 0; hop < 3; hop++) {
@@ -243,26 +289,26 @@ export async function validateSiteUrl(
       );
       if (res.status >= 300 && res.status < 400) {
         const loc = res.headers.get("location");
-        if (!loc) return { status: "site_invalido", finalDomain: siteDomain(current) };
+        if (!loc) return { state: "site_invalido", finalDomain: siteDomain(current) };
         const next = new URL(loc, current);
         if (next.protocol !== "http:" && next.protocol !== "https:")
-          return { status: "site_invalido", finalDomain: null };
-        if (isPrivateHost(next.hostname)) return { status: "site_invalido", finalDomain: null };
+          return { state: "site_invalido", finalDomain: null };
+        if (isPrivateHost(next.hostname)) return { state: "site_invalido", finalDomain: null };
         if (isSocialOrDirectory(next.href))
-          return { status: "sem_site_confirmado", finalDomain: siteDomain(next.href) };
+          return { state: "sem_evidencia_de_site_na_fonte", finalDomain: siteDomain(next.href) };
         current = next.href;
         continue;
       }
       if (res.status >= 200 && res.status < 400)
-        return { status: "site_encontrado", finalDomain: siteDomain(current) };
+        return { state: "site_confirmado", finalDomain: siteDomain(current) };
       if (res.status === 403 || res.status === 405)
-        return { status: "site_encontrado", finalDomain: siteDomain(current) };
-      return { status: "site_invalido", finalDomain: siteDomain(current) };
+        return { state: "dominio_bloqueou_verificacao", finalDomain: siteDomain(current) };
+      return { state: "site_invalido", finalDomain: siteDomain(current) };
     } catch {
-      return { status: "site_invalido", finalDomain: siteDomain(current) };
+      return { state: "site_invalido", finalDomain: siteDomain(current) };
     }
   }
-  return { status: "site_invalido", finalDomain: siteDomain(current) };
+  return { state: "site_invalido", finalDomain: siteDomain(current) };
 }
 
 /** Deduplica candidatos entre si. */
