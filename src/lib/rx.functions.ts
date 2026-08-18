@@ -47,8 +47,9 @@ export const rxSearch = createServerFn({ method: "POST" })
       if (places.length > 1) {
         return { needsConfirmation: true as const, places, candidates: [], stats: null, placeLabel: null };
       }
-      bbox = places[0].boundingbox;
-      placeLabel = places[0].display_name;
+      const place = places[0]!;
+      bbox = place.boundingbox;
+      placeLabel = place.display_name;
     }
 
     const tags = tagsForSegment(data.segment);
@@ -63,6 +64,7 @@ export const rxSearch = createServerFn({ method: "POST" })
       .map((el) => elementToCandidate(el, ctx))
       .filter((c): c is NonNullable<typeof c> => Boolean(c));
 
+    const { computeConfidence, siteStateToWebsiteStatus } = await import("./rx");
     const { kept, removed } = dedupeCandidates(raw);
 
     let filtered = kept;
@@ -78,12 +80,24 @@ export const rxSearch = createServerFn({ method: "POST" })
       await Promise.all(
         selected.slice(i, i + batch).map(async (c) => {
           if (!c.website) {
-            c.website_status = "sem_site_confirmado";
-            return;
+            c.site_state = "sem_evidencia_de_site_na_fonte";
+          } else {
+            const r = await validateSiteUrl(c.website);
+            c.site_state = r.state;
+            c.website_final_domain = r.finalDomain;
           }
-          const r = await validateSiteUrl(c.website);
-          c.website_status = r.status;
-          c.website_final_domain = r.finalDomain;
+          c.website_status = siteStateToWebsiteStatus(c.site_state);
+          const evi = c.evidence.find((e) => e.field === "website");
+          if (evi) {
+            evi.status =
+              c.site_state === "site_confirmado"
+                ? "confirmado"
+                : c.site_state === "sem_evidencia_de_site_na_fonte"
+                  ? "ausente_na_fonte"
+                  : "nao_confirmado";
+            evi.checked_at = new Date().toISOString();
+          }
+          c.confidence = computeConfidence(c);
         }),
       );
     }
@@ -98,8 +112,8 @@ export const rxSearch = createServerFn({ method: "POST" })
       stats: {
         discovered: raw.length,
         duplicatesRemoved: removed,
-        withSite: selected.filter((c) => c.website_status === "site_encontrado").length,
-        withoutSite: selected.filter((c) => c.website_status === "sem_site_confirmado").length,
+        withSite: selected.filter((c) => c.site_state === "site_confirmado").length,
+        withoutSite: selected.filter((c) => c.site_state === "sem_evidencia_de_site_na_fonte").length,
       },
     };
   });
