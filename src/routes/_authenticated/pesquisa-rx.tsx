@@ -14,8 +14,17 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { rxSearch } from "@/lib/rx.functions";
-import { candidateKeys, scoreBreakdown, type GeoPlace, type RxCandidate } from "@/lib/rx";
-import { DEFAULT_WEIGHTS, WEBSITE_STATUS, priorityFromScore, formatDate } from "@/lib/prospector";
+import {
+  candidateKeys,
+  rxScoreBreakdown,
+  computeConfidence,
+  RX_SITE_STATE,
+  EVIDENCE_LABEL,
+  CONFIDENCE_LABEL,
+  type GeoPlace,
+  type RxCandidate,
+} from "@/lib/rx";
+import { DEFAULT_WEIGHTS, priorityFromScore, formatDate } from "@/lib/prospector";
 import { useInvalidate, useLeads, useNiches, useSettings } from "@/hooks/useProspector";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -104,7 +113,7 @@ function PesquisaRxPage() {
     () =>
       candidates
         .map((c) => {
-          const { score, items } = scoreBreakdown(c, weights);
+          const { score, items } = rxScoreBreakdown(c, weights);
           return { ...c, score, items };
         })
         .filter((c) => (minReviews > 0 ? (c.reviews_count ?? 0) >= minReviews : true))
@@ -121,8 +130,8 @@ function PesquisaRxPage() {
     return {
       found: scored.length,
       dups: stats?.duplicatesRemoved ?? 0,
-      withSite: scored.filter((c) => c.website_status === "site_encontrado").length,
-      noSite: scored.filter((c) => c.website_status === "sem_site_confirmado").length,
+      withSite: scored.filter((c) => c.site_state === "site_confirmado").length,
+      noSite: scored.filter((c) => c.site_state === "sem_evidencia_de_site_na_fonte").length,
       avg,
       top: scored.filter((c) => ["A+", "A"].includes(priorityFromScore(c.score))).length,
     };
@@ -194,7 +203,7 @@ function PesquisaRxPage() {
           continue;
         }
         existingKeys.push(k);
-        const { score } = scoreBreakdown(c, weights);
+        const { score } = rxScoreBreakdown(c, weights);
         rows.push({
           user_id: userId,
           company: c.company,
@@ -434,7 +443,7 @@ function PesquisaRxPage() {
               { label: "Candidatos", value: summary.found },
               { label: "Duplicados removidos", value: summary.dups },
               { label: "Sites encontrados", value: summary.withSite },
-              { label: "Sem site confirmado", value: summary.noSite },
+              { label: "Site não encontrado na fonte", value: summary.noSite },
               { label: "Score médio", value: summary.avg },
               { label: "Prioridade A+/A", value: summary.top },
             ].map((m) => (
@@ -487,6 +496,7 @@ function PesquisaRxPage() {
                     <TableHead>Telefone</TableHead>
                     <TableHead>Site</TableHead>
                     <TableHead>Status do site</TableHead>
+                    <TableHead>Confiança</TableHead>
                     <TableHead>Nota</TableHead>
                     <TableHead>Avaliações</TableHead>
                     <TableHead>Score</TableHead>
@@ -518,10 +528,15 @@ function PesquisaRxPage() {
                         {c.website ?? "não identificado"}
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">{WEBSITE_STATUS[c.website_status]}</Badge>
+                        <Badge variant="outline">{RX_SITE_STATE[c.site_state]}</Badge>
                       </TableCell>
-                      <TableCell>{c.rating ?? "—"}</TableCell>
-                      <TableCell>{c.reviews_count ?? "—"}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline">
+                          {CONFIDENCE_LABEL[c.confidence ?? computeConfidence(c)]}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{c.rating ?? "Não confirmado"}</TableCell>
+                      <TableCell>{c.reviews_count ?? "Não confirmado"}</TableCell>
                       <TableCell className="font-semibold">{c.score}</TableCell>
                       <TableCell>
                         <Badge>{priorityFromScore(c.score)}</Badge>
