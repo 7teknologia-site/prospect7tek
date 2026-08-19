@@ -203,31 +203,6 @@ export function candidateKeys(c: {
 
 export type ScoreItem = { label: string; points: number };
 
-/** Score explicável — usa os mesmos pesos configuráveis do sistema. */
-export function scoreBreakdown(
-  lead: Partial<Lead>,
-  w: ScoreWeights = DEFAULT_WEIGHTS,
-): { score: number; items: ScoreItem[] } {
-  const items: ScoreItem[] = [];
-  if (lead.website_status === "sem_site_confirmado")
-    items.push({ label: "Sem site confirmado", points: w.no_website });
-  if (lead.phone) items.push({ label: "Telefone disponível", points: w.phone });
-  if (lead.whatsapp) items.push({ label: "WhatsApp confirmado", points: w.whatsapp });
-  const reviews = lead.reviews_count ?? null;
-  if (reviews != null && reviews >= 50)
-    items.push({ label: `${reviews} avaliações`, points: w.reviews_50 });
-  else if (reviews != null && reviews >= 20)
-    items.push({ label: `${reviews} avaliações`, points: w.reviews_20 });
-  if (lead.rating != null && lead.rating >= 4.5)
-    items.push({ label: `Nota ${lead.rating}`, points: w.rating_45 });
-  if (lead.instagram) items.push({ label: "Instagram", points: w.instagram });
-  if (lead.linkedin) items.push({ label: "LinkedIn", points: w.linkedin });
-  if (lead.independent_local !== false)
-    items.push({ label: "Empresa local independente", points: w.independent });
-  const raw = items.reduce((a, b) => a + b.points, 0);
-  return { score: Math.max(0, Math.min(100, Math.round(raw))), items };
-}
-
 /** Motivo de oportunidade baseado apenas em evidências reais. */
 export function rxOpportunityReason(c: Partial<RxCandidate>): string {
   const bits: string[] = [];
