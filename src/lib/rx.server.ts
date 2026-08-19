@@ -77,7 +77,11 @@ export async function geocodePlaces(query: string): Promise<GeoPlace[]> {
   const url =
     "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=0&limit=5&countrycodes=br&q=" +
     encodeURIComponent(query);
-  const res = await fetchWithTimeout(url, { headers: { "User-Agent": UA, Accept: "application/json" } }, 12000);
+  const res = await fetchWithTimeout(
+    url,
+    { headers: { "User-Agent": UA, Accept: "application/json" } },
+    12000,
+  );
   if (!res.ok) throw new Error("Nominatim indisponível no momento. Tente novamente.");
   const json = (await res.json()) as Array<{
     display_name: string;
@@ -188,18 +192,18 @@ export function elementToCandidate(
   const whatsapp = pick(tags, ["contact:whatsapp", "whatsapp"]);
 
   const osmUrl = `https://www.openstreetmap.org/${el.type}/${el.id}`;
-  const mapsQuery = encodeURIComponent(`${company} ${address ?? ""} ${tags["addr:city"] ?? ""}`.trim());
+  const mapsQuery = encodeURIComponent(
+    `${company} ${address ?? ""} ${tags["addr:city"] ?? ""}`.trim(),
+  );
 
   const now = new Date().toISOString();
   const src = "OpenStreetMap";
-  const site_state: RxSiteState = website ? "site_nao_confirmado" : "sem_evidencia_de_site_na_fonte";
+  const site_state: RxSiteState = website
+    ? "site_nao_confirmado"
+    : "sem_evidencia_de_site_na_fonte";
   const independent = !tags["brand"] && !tags["brand:wikidata"];
 
-  const ev = (
-    field: string,
-    label: string,
-    value: string | null,
-  ): RxEvidence =>
+  const ev = (field: string, label: string, value: string | null): RxEvidence =>
     value
       ? makeEvidence(field, label, value, "confirmado", src, osmUrl, now)
       : makeEvidence(field, label, null, "ausente_na_fonte", null, null, now);

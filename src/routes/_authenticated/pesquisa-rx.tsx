@@ -2,16 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import {
-  Activity,
-  CheckCircle2,
-  Globe,
-  Loader2,
-  Radar,
-  Search,
-  Trash2,
-  X,
-} from "lucide-react";
+import { Activity, CheckCircle2, Globe, Loader2, Radar, Search, Trash2, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { rxSearch } from "@/lib/rx.functions";
 import {
@@ -101,7 +92,9 @@ function PesquisaRxPage() {
   const [places, setPlaces] = useState<GeoPlace[]>([]);
   const [placeLabel, setPlaceLabel] = useState<string | null>(null);
   const [candidates, setCandidates] = useState<RxCandidate[]>([]);
-  const [stats, setStats] = useState<{ discovered: number; duplicatesRemoved: number } | null>(null);
+  const [stats, setStats] = useState<{ discovered: number; duplicatesRemoved: number } | null>(
+    null,
+  );
   const [selected, setSelected] = useState<Record<string, boolean>>({});
   const [detail, setDetail] = useState<Scored | null>(null);
   const [saving, setSaving] = useState(false);
@@ -297,15 +290,27 @@ function PesquisaRxPage() {
           <div className="grid gap-4 md:grid-cols-4">
             <div className="space-y-1.5">
               <Label>Segmento / nicho</Label>
-              <Input value={segment} onChange={(e) => setSegment(e.target.value)} placeholder="salão de beleza" />
+              <Input
+                value={segment}
+                onChange={(e) => setSegment(e.target.value)}
+                placeholder="salão de beleza"
+              />
             </div>
             <div className="space-y-1.5">
               <Label>Região</Label>
-              <Input value={region} onChange={(e) => setRegion(e.target.value)} placeholder="Zona Norte de São Paulo" />
+              <Input
+                value={region}
+                onChange={(e) => setRegion(e.target.value)}
+                placeholder="Zona Norte de São Paulo"
+              />
             </div>
             <div className="space-y-1.5">
               <Label>Bairro (opcional)</Label>
-              <Input value={neighborhood} onChange={(e) => setNeighborhood(e.target.value)} placeholder="Santana" />
+              <Input
+                value={neighborhood}
+                onChange={(e) => setNeighborhood(e.target.value)}
+                placeholder="Santana"
+              />
             </div>
             <div className="space-y-1.5">
               <Label>Quantidade</Label>
@@ -330,8 +335,13 @@ function PesquisaRxPage() {
             </div>
             <div className="space-y-1.5">
               <Label>Exigir telefone</Label>
-              <Select value={requirePhone ? "sim" : "nao"} onValueChange={(v) => setRequirePhone(v === "sim")}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+              <Select
+                value={requirePhone ? "sim" : "nao"}
+                onValueChange={(v) => setRequirePhone(v === "sim")}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="nao">Não</SelectItem>
                   <SelectItem value="sim">Sim</SelectItem>
@@ -340,8 +350,13 @@ function PesquisaRxPage() {
             </div>
             <div className="space-y-1.5">
               <Label>Exigir site próprio</Label>
-              <Select value={requireSite} onValueChange={(v) => setRequireSite(v as typeof requireSite)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+              <Select
+                value={requireSite}
+                onValueChange={(v) => setRequireSite(v as typeof requireSite)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="tanto">Não importa</SelectItem>
                   <SelectItem value="sim">Sim</SelectItem>
@@ -352,11 +367,15 @@ function PesquisaRxPage() {
             <div className="space-y-1.5">
               <Label>Nicho ao importar</Label>
               <Select value={nicheId} onValueChange={setNicheId}>
-                <SelectTrigger><SelectValue placeholder="Sem nicho" /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sem nicho" />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">Sem nicho</SelectItem>
                   {(niches ?? []).map((n) => (
-                    <SelectItem key={n.id} value={n.id}>{n.name}</SelectItem>
+                    <SelectItem key={n.id} value={n.id}>
+                      {n.name}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -364,7 +383,11 @@ function PesquisaRxPage() {
           </div>
           <div className="flex flex-wrap gap-2">
             <Button onClick={() => runSearch()} disabled={loading}>
-              {loading ? <Loader2 className="size-4 animate-spin" /> : <Search className="size-4" />}
+              {loading ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Search className="size-4" />
+              )}
               Pesquisar oportunidades
             </Button>
             {loading && (
@@ -472,7 +495,11 @@ function PesquisaRxPage() {
                   {allSelected ? "Limpar seleção" : "Selecionar todos"}
                 </Button>
                 <Button size="sm" onClick={addSelected} disabled={!selectedList.length || saving}>
-                  {saving ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />}
+                  {saving ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <CheckCircle2 className="size-4" />
+                  )}
                   Adicionar selecionados aos Leads ({selectedList.length})
                 </Button>
                 <Button
@@ -507,11 +534,7 @@ function PesquisaRxPage() {
                 </TableHeader>
                 <TableBody>
                   {scored.map((c) => (
-                    <TableRow
-                      key={c.key}
-                      className="cursor-pointer"
-                      onClick={() => setDetail(c)}
-                    >
+                    <TableRow key={c.key} className="cursor-pointer" onClick={() => setDetail(c)}>
                       <TableCell onClick={(e) => e.stopPropagation()}>
                         <Checkbox
                           checked={!!selected[c.key]}
@@ -563,7 +586,8 @@ function PesquisaRxPage() {
                   <Radar className="size-4" /> {detail.company}
                 </DialogTitle>
                 <DialogDescription>
-                  {detail.address ?? "Endereço não identificado"} · {detail.city ?? "cidade não identificada"}
+                  {detail.address ?? "Endereço não identificado"} ·{" "}
+                  {detail.city ?? "cidade não identificada"}
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 text-sm">
@@ -647,7 +671,10 @@ function PesquisaRxPage() {
                     ["LinkedIn", detail.linkedin],
                     ["Bairro", detail.neighborhood],
                     ["CEP", detail.zip],
-                    ["Coordenadas", detail.latitude ? `${detail.latitude}, ${detail.longitude}` : null],
+                    [
+                      "Coordenadas",
+                      detail.latitude ? `${detail.latitude}, ${detail.longitude}` : null,
+                    ],
                     ["Independente", detail.independent_local ? "Sim" : "Não (rede/marca)"],
                     ["Coletado em", formatDate(new Date().toISOString())],
                   ].map(([k, v]) => (
@@ -661,12 +688,16 @@ function PesquisaRxPage() {
                 <div className="flex flex-wrap gap-2">
                   {detail.source_url && (
                     <a href={detail.source_url} target="_blank" rel="noreferrer">
-                      <Button variant="outline" size="sm">Ver no {detail.source}</Button>
+                      <Button variant="outline" size="sm">
+                        Ver no {detail.source}
+                      </Button>
                     </a>
                   )}
                   {detail.google_maps_url && (
                     <a href={detail.google_maps_url} target="_blank" rel="noreferrer">
-                      <Button variant="outline" size="sm">Pesquisar no Google Maps</Button>
+                      <Button variant="outline" size="sm">
+                        Pesquisar no Google Maps
+                      </Button>
                     </a>
                   )}
                 </div>
