@@ -231,13 +231,14 @@ export function scoreBreakdown(
 /** Motivo de oportunidade baseado apenas em evidências reais. */
 export function rxOpportunityReason(c: Partial<RxCandidate>): string {
   const bits: string[] = [];
-  if (c.website_status === "sem_site_confirmado") bits.push("não possui site próprio identificado");
-  if (c.website_status === "site_invalido") bits.push("site cadastrado não responde");
+  if (c.site_state === "site_invalido") bits.push("site cadastrado não responde (verificado)");
+  if (c.site_state === "sem_evidencia_de_site_na_fonte")
+    bits.push("nenhum site encontrado na fonte consultada (não confirma ausência de site)");
   if (c.reviews_count != null && c.reviews_count >= 20)
     bits.push(`${c.reviews_count} avaliações registradas`);
   if (c.rating != null && c.rating >= 4.5) bits.push(`nota ${c.rating}`);
   if (c.instagram) bits.push("presença no Instagram");
   if (c.phone) bits.push("telefone público disponível");
-  if (!bits.length) return "Dados públicos insuficientes — validação manual necessária.";
+  if (!bits.length) return "Oportunidade ainda não confirmada — validação manual necessária.";
   return `Oportunidade: ${bits.join(", ")}.`;
 }
