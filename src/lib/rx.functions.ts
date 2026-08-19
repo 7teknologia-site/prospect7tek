@@ -45,7 +45,13 @@ export const rxSearch = createServerFn({ method: "POST" })
       const places = await geocodePlaces(q);
       if (!places.length) throw new Error(`Não foi possível localizar "${q}". Tente outro texto.`);
       if (places.length > 1) {
-        return { needsConfirmation: true as const, places, candidates: [], stats: null, placeLabel: null };
+        return {
+          needsConfirmation: true as const,
+          places,
+          candidates: [],
+          stats: null,
+          placeLabel: null,
+        };
       }
       const place = places[0]!;
       bbox = place.boundingbox;
@@ -113,7 +119,8 @@ export const rxSearch = createServerFn({ method: "POST" })
         discovered: raw.length,
         duplicatesRemoved: removed,
         withSite: selected.filter((c) => c.site_state === "site_confirmado").length,
-        withoutSite: selected.filter((c) => c.site_state === "sem_evidencia_de_site_na_fonte").length,
+        withoutSite: selected.filter((c) => c.site_state === "sem_evidencia_de_site_na_fonte")
+          .length,
       },
     };
   });
