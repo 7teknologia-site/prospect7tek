@@ -568,7 +568,13 @@ function PesquisaRxPage() {
               </DialogHeader>
               <div className="space-y-4 text-sm">
                 <div className="rounded-lg border border-border p-3">
-                  <p className="font-display text-lg font-semibold">Score {detail.score}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="font-display text-lg font-semibold">Score {detail.score}</p>
+                    <Badge variant="outline" className="ml-auto">
+                      {CONFIDENCE_LABEL[detail.confidence ?? computeConfidence(detail)]}
+                    </Badge>
+                    <Badge variant="outline">{RX_SITE_STATE[detail.site_state]}</Badge>
+                  </div>
                   <ul className="mt-2 space-y-1">
                     {detail.items.map((i) => (
                       <li key={i.label} className="flex justify-between">
@@ -576,9 +582,55 @@ function PesquisaRxPage() {
                         <span className="font-medium text-primary">+{i.points}</span>
                       </li>
                     ))}
+                    {!detail.items.length && (
+                      <li className="text-muted-foreground">
+                        Nenhum critério confirmado até o momento.
+                      </li>
+                    )}
                   </ul>
                   <p className="mt-2 text-xs text-muted-foreground">
-                    Itens não disponíveis nas fontes públicas não pontuam.
+                    Só pontuam evidências confirmadas. Ausência de informação vale 0 ponto e nunca
+                    penaliza.
+                  </p>
+                </div>
+                <div className="rounded-lg border border-border p-3">
+                  <p className="mb-2 font-medium">Evidências</p>
+                  <ul className="space-y-2">
+                    {(detail.evidence ?? []).map((e) => (
+                      <li key={e.field} className="border-b border-border/50 pb-2 last:border-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-medium">{e.label}</span>
+                          <Badge variant="outline" className="text-[10px]">
+                            {EVIDENCE_LABEL[e.status]}
+                          </Badge>
+                        </div>
+                        <p className="break-words text-muted-foreground">
+                          {e.value ?? "não identificado"}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Fonte: {e.source ?? "—"}
+                          {e.source_url ? (
+                            <>
+                              {" · "}
+                              <a
+                                href={e.source_url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="underline"
+                              >
+                                abrir fonte
+                              </a>
+                            </>
+                          ) : null}
+                          {" · "}
+                          Verificado em {formatDate(e.checked_at)}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    “Não encontrado na fonte consultada” significa apenas que a fonte pública não
+                    trouxe o dado — não prova que o recurso não existe.
                   </p>
                 </div>
                 <dl className="grid grid-cols-2 gap-2">
@@ -586,8 +638,10 @@ function PesquisaRxPage() {
                     ["Telefone", detail.phone],
                     ["WhatsApp", detail.whatsapp],
                     ["Site", detail.website],
-                    ["Status do site", WEBSITE_STATUS[detail.website_status]],
+                    ["Status do site", RX_SITE_STATE[detail.site_state]],
                     ["Domínio final", detail.website_final_domain],
+                    ["Nota (Google)", detail.rating ?? "Não confirmado"],
+                    ["Avaliações (Google)", detail.reviews_count ?? "Não confirmado"],
                     ["Instagram", detail.instagram],
                     ["Facebook", detail.facebook],
                     ["LinkedIn", detail.linkedin],
