@@ -421,9 +421,9 @@ function PesquisaRxPage() {
             <div className="rounded-lg border border-border p-3">
               <p className="mb-2 text-sm font-medium">Confirme a área geográfica:</p>
               <div className="flex flex-col gap-2">
-                {places.map((p) => (
+                {places.map((p, i) => (
                   <Button
-                    key={p.display_name}
+                    key={`${p.display_name}-${p.lat}-${p.lon}-${i}`}
                     variant="outline"
                     className="justify-start text-left"
                     onClick={() => {
